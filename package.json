@@ -1,0 +1,17 @@
+{
+  "name": "text-scrambler.js",
+  "version": "1.0.0",
+  "description": "a scramble text animation library",
+  "main": "text-scrambler.js",
+  "author": "tizee",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsup"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.4",
+    "bumpp": "^10.0.3",
+    "tsup": "^8.3.6",
+    "typescript": "^5.7.3"
+  }
+}
