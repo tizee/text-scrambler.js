@@ -20,6 +20,13 @@ module.exports = [
         cancelAnimationFrame: 'readonly',
         setTimeout: 'readonly',
         clearTimeout: 'readonly',
+        // UMD globals
+        module: 'readonly',
+        exports: 'readonly',
+        define: 'readonly',
+        global: 'readonly',
+        self: 'readonly',
+        globalThis: 'readonly',
       },
     },
     plugins: {
