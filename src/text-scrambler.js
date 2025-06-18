@@ -356,6 +356,17 @@ class TextScrambler {
     // Browser global
     root.TextScrambler = factory()
   }
-})(typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this, function () {
-  return TextScrambler
-})
+})(
+  typeof globalThis !== 'undefined'
+    ? globalThis
+    : typeof window !== 'undefined'
+      ? window
+      : typeof global !== 'undefined'
+        ? global
+        : typeof self !== 'undefined'
+          ? self
+          : this,
+  function () {
+    return TextScrambler
+  }
+)
