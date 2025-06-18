@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Text Scrambler Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.19.2/dist/lil-gui.umd.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+        background: #0a0a0a;
+        color: #e0e0e0;
+        line-height: 1.4;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .container {
+        display: grid;
+        grid-template-areas: 
+          "header header"
+          "demo samples"
+          "info info";
+        grid-template-rows: auto 1fr auto;
+        grid-template-columns: 1fr 1fr;
+        height: 100vh;
+        padding: 1rem;
+        gap: 1rem;
+      }
+
+      .header {
+        grid-area: header;
+        text-align: center;
+        padding: 1rem 0;
+      }
+
+      .main-title {
+        font-size: clamp(1.8rem, 5vw, 3.5rem);
+        font-weight: 300;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.1em;
+        color: #00ff41;
+        text-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+      }
+
+      .subtitle {
+        font-size: 0.9rem;
+        color: #888;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.05em;
+      }
+
+      .description {
+        font-size: 0.8rem;
+        opacity: 0.7;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      /* Auto-initializing elements should start hidden */
+      .auto-init {
+        opacity: 0;
+      }
+
+      .demo-section {
+        grid-area: demo;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 1rem;
+      }
+
+      .demo-title {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        color: #00ff41;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .demo-text {
+        font-size: clamp(1.2rem, 3vw, 2rem);
+        min-height: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        letter-spacing: 0.05em;
+        text-align: center;
+        background: rgba(0, 255, 65, 0.05);
+      }
+
+      .samples-section {
+        grid-area: samples;
+        display: flex;
+        flex-direction: column;
+        padding: 1rem;
+      }
+
+      .samples-title {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        color: #00ff41;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .sample-texts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.8rem;
+        flex: 1;
+        align-content: start;
+      }
+
+      .sample-text {
+        font-size: 0.9rem;
+        padding: 1rem;
+        min-height: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        letter-spacing: 0.02em;
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .sample-text:hover {
+        color: #00ff41;
+        background: rgba(0, 255, 65, 0.1);
+      }
+
+      .info-section {
+        grid-area: info;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+        padding: 1rem;
+        font-size: 0.8rem;
+        line-height: 1.3;
+      }
+
+      .info-block {
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .info-block h3 {
+        color: #00ff41;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .controls {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 1001;
+      }
+
+      /* Reset lil-gui styles to avoid conflicts */
+      .lil-gui {
+        font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace !important;
+        font-size: 11px !important;
+        line-height: 1 !important;
+      }
+
+      @media (max-width: 1024px) {
+        .container {
+          grid-template-areas: 
+            "header"
+            "demo"
+            "samples"
+            "info";
+          grid-template-columns: 1fr;
+          grid-template-rows: auto auto auto auto;
+          overflow-y: auto;
+          height: auto;
+          min-height: 100vh;
+        }
+
+        .info-section {
+          grid-template-columns: 1fr;
+        }
+
+        .sample-texts {
+          grid-template-columns: 1fr;
+        }
+
+        .controls {
+          position: relative;
+          top: auto;
+          right: auto;
+          margin: 1rem 0;
+          text-align: center;
+        }
+
+        body {
+          overflow: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1 class="main-title auto-init" id="main-title">TEXT SCRAMBLER</h1>
+        <p class="subtitle auto-init" id="subtitle">
+          A lightweight JavaScript library for text scramble animations
+        </p>
+        <p class="description auto-init" id="description">
+          Experience the power of dynamic text animations with customizable scramble effects
+        </p>
+      </header>
+
+      <div class="controls" id="gui-container"></div>
+
+      <section class="demo-section">
+        <h2 class="demo-title">Interactive Demo</h2>
+        <div class="demo-text" id="demo-text">
+          Click any sample text to see the animation
+        </div>
+      </section>
+
+      <section class="samples-section">
+        <h2 class="samples-title">Sample Texts</h2>
+        <div class="sample-texts">
+          <div class="sample-text" data-text="Hello, World!">Hello, World!</div>
+          <div class="sample-text" data-text="MATRIX DIGITAL RAIN">MATRIX DIGITAL RAIN</div>
+          <div class="sample-text" data-text="Cyberpunk 2077">Cyberpunk 2077</div>
+          <div class="sample-text" data-text="The Quick Brown Fox">The Quick Brown Fox</div>
+          <div class="sample-text" data-text="SYSTEM INITIALIZING...">SYSTEM INITIALIZING...</div>
+          <div class="sample-text" data-text="Beautiful Typography">Beautiful Typography</div>
+        </div>
+      </section>
+
+      <section class="info-section">
+        <div class="info-block">
+          <h3>Usage</h3>
+          <p>Click any text sample to trigger the scramble animation. Use the control panel to adjust parameters in real-time.</p>
+        </div>
+        
+        <div class="info-block">
+          <h3>Animation Modes</h3>
+          <p>Reveal mode shows text progressively. Dissolve mode makes text disappear with scrambled characters.</p>
+        </div>
+        
+        <div class="info-block">
+          <h3>Preset Effects</h3>
+          <p>Choose from Matrix, Typewriter, Glitch, and Hacking presets, each with optimized settings for different visual styles.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- Load the built TextScrambler library -->
+    <script src="./dist/text-scrambler.js"></script>
+
+    <script>
+      const { GUI } = lil
+
+      // Global variables for demo
+      let currentScrambler = null
+      const demoText = document.getElementById('demo-text')
+
+      // Default parameters
+      const defaultParams = {
+        duration: 2000,
+        delay: 0,
+        reverse: false,
+        scrambleSymbols: '@#$%&*()[]{}',
+        randomThreshold: 0.8,
+        autoplay: false,
+        animationMode: 'Custom',
+        presetEffect: 'Default',
+        demoText: 'Sample Text',
+      }
+
+      // GUI Setup - create a copy of defaults
+      const params = { ...defaultParams }
+
+      const gui = new GUI({
+        container: document.getElementById('gui-container'),
+        width: 280,
+      })
+      
+      // Make GUI draggable
+      gui.domElement.style.position = 'relative'
+      gui.domElement.style.cursor = 'move'
+      
+      let isDragging = false
+      let dragOffset = { x: 0, y: 0 }
+      
+      gui.domElement.addEventListener('mousedown', (e) => {
+        isDragging = true
+        const container = document.getElementById('gui-container')
+        const rect = container.getBoundingClientRect()
+        dragOffset.x = e.clientX - rect.left
+        dragOffset.y = e.clientY - rect.top
+        document.body.style.userSelect = 'none'
+      })
+      
+      document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+          const container = document.getElementById('gui-container')
+          const containerRect = container.getBoundingClientRect()
+          
+          // Calculate new position
+          let newX = e.clientX - dragOffset.x
+          let newY = e.clientY - dragOffset.y
+          
+          // Get viewport dimensions
+          const viewportWidth = window.innerWidth
+          const viewportHeight = window.innerHeight
+          const panelWidth = containerRect.width
+          const panelHeight = containerRect.height
+          
+          // Apply boundary constraints
+          newX = Math.max(0, Math.min(newX, viewportWidth - panelWidth))
+          newY = Math.max(0, Math.min(newY, viewportHeight - panelHeight))
+          
+          container.style.left = newX + 'px'
+          container.style.top = newY + 'px'
+        }
+      })
+      
+      document.addEventListener('mouseup', () => {
+        isDragging = false
+        document.body.style.userSelect = ''
+      })
+
+      // Animation Controls
+      const animationFolder = gui.addFolder('Animation Controls')
+      animationFolder
+        .add(params, 'demoText')
+        .name('Demo Text')
+        .onChange(value => {
+          demoText.textContent = value
+          demoText.dataset.text = value
+        })
+
+      const actions = {
+        triggerAnimation: () => triggerAnimation(params.demoText),
+        stopAnimation: () => currentScrambler?.stop(),
+        resetToDefaults: () => resetToDefaults(),
+      }
+
+      animationFolder
+        .add(actions, 'triggerAnimation')
+        .name('▶ Start Animation')
+      animationFolder.add(actions, 'stopAnimation').name('⏹ Stop Animation')
+      animationFolder
+        .add(actions, 'resetToDefaults')
+        .name('🔄 Reset to Defaults')
+      animationFolder.open()
+
+      // Animation Modes
+      const modeFolder = gui.addFolder('Animation Modes')
+      modeFolder
+        .add(params, 'animationMode', ['Custom', 'Reveal', 'Dissolve'])
+        .name('Mode')
+        .onChange(mode => {
+          if (mode === 'Reveal') {
+            Object.assign(params, {
+              reverse: false,
+              duration: 2500,
+              scrambleSymbols: '█▓▒░',
+              randomThreshold: 0.85,
+            })
+            triggerAnimation('REVEALING TEXT')
+          } else if (mode === 'Dissolve') {
+            Object.assign(params, {
+              reverse: true,
+              duration: 2500,
+              scrambleSymbols: 'x',
+              randomThreshold: 0.1,
+            })
+            triggerAnimation('DISSOLVING TEXT')
+          }
+          updateGUI()
+        })
+
+      // Preset Effects
+      const presetFolder = gui.addFolder('Preset Effects')
+      presetFolder
+        .add(params, 'presetEffect', [
+          'Default',
+          'Matrix',
+          'Typewriter',
+          'Glitch',
+          'Hacking',
+        ])
+        .name('Preset')
+        .onChange(preset => {
+          const presets = {
+            Default: { ...defaultParams, animationMode: 'Custom' },
+            Matrix: {
+              scrambleSymbols: '01',
+              duration: 3000,
+              randomThreshold: 0.9,
+              reverse: false,
+            },
+            Typewriter: {
+              scrambleSymbols: '_',
+              duration: 2000,
+              randomThreshold: 0.95,
+              reverse: false,
+            },
+            Glitch: {
+              scrambleSymbols: '█▓▒░',
+              duration: 1500,
+              randomThreshold: 0.7,
+              reverse: false,
+            },
+            Hacking: {
+              scrambleSymbols: '<>(){}[]',
+              duration: 2500,
+              randomThreshold: 0.85,
+              reverse: false,
+            },
+          }
+
+          if (presets[preset]) {
+            Object.assign(params, presets[preset])
+            params.animationMode = 'Custom'
+            params.presetEffect = preset
+
+            const displayText =
+              preset === 'Default'
+                ? params.demoText
+                : `${preset.toUpperCase()} EFFECT`
+            triggerAnimation(displayText)
+            updateGUI()
+          }
+        })
+
+      // Custom Settings
+      const customFolder = gui.addFolder('Custom Settings')
+      customFolder.add(params, 'duration', 500, 5000, 100).name('Duration (ms)')
+      customFolder.add(params, 'delay', 0, 2000, 100).name('Delay (ms)')
+      customFolder.add(params, 'reverse').name('Reverse Mode')
+      customFolder.add(params, 'scrambleSymbols').name('Scramble Symbols')
+      customFolder
+        .add(params, 'randomThreshold', 0, 1, 0.05)
+        .name('Random Threshold')
+      customFolder.add(params, 'autoplay').name('Auto Replay')
+
+      // Function to update GUI when params change programmatically
+      function updateGUI() {
+        gui.controllersRecursive().forEach(controller => {
+          controller.updateDisplay()
+        })
+      }
+
+      // Function to reset all parameters to defaults
+      function resetToDefaults() {
+        // Stop current animation
+        if (currentScrambler) {
+          currentScrambler.stop()
+        }
+
+        // Reset all parameters
+        Object.assign(params, defaultParams)
+
+        // Reset demo text display
+        demoText.textContent = params.demoText
+        demoText.dataset.text = params.demoText
+
+        // Update GUI to reflect changes
+        updateGUI()
+
+        // Optionally trigger default animation
+        triggerAnimation(params.demoText)
+      }
+
+      // Animation functions
+      function triggerAnimation(text, customConfig = {}) {
+        if (currentScrambler) {
+          currentScrambler.stop()
+        }
+
+        demoText.textContent = text
+        demoText.dataset.text = text
+
+        const config = { ...params, ...customConfig }
+        currentScrambler = new TextScrambler(demoText, config)
+        currentScrambler.start()
+
+        if (params.autoplay) {
+          setTimeout(
+            () => {
+              if (!currentScrambler._running) {
+                triggerAnimation(text, customConfig)
+              }
+            },
+            config.duration + config.delay + 1000
+          )
+        }
+      }
+
+      // Sample text interactions
+      document.querySelectorAll('.sample-text').forEach(element => {
+        element.addEventListener('click', () => {
+          const text = element.dataset.text || element.textContent
+          params.demoText = text
+          triggerAnimation(text)
+          updateGUI()
+        })
+      })
+
+      // Initialize page animations with improved API
+      function initializePageAnimations() {
+        // Function to restore opacity after initialization
+        function restoreOpacity(element) {
+          element.style.opacity = '1'
+          element.classList.remove('auto-init')
+        }
+
+        // Create title scrambler - autoInitialize will handle the initial state
+        const titleScrambler = new TextScrambler(
+          document.getElementById('main-title'),
+          {
+            duration: 3000,
+            scrambleSymbols: '█▓▒░',
+            randomThreshold: 0.85,
+            autoInitialize: true, // Text starts hidden, ready to reveal
+          }
+        )
+
+        // Create subtitle scrambler
+        const subtitleScrambler = new TextScrambler(
+          document.getElementById('subtitle'),
+          {
+            duration: 2500,
+            scrambleSymbols: '-=+*',
+            randomThreshold: 0.9,
+            autoInitialize: true,
+          }
+        )
+
+        // Create description scrambler
+        const descScrambler = new TextScrambler(
+          document.getElementById('description'),
+          {
+            duration: 2000,
+            scrambleSymbols: '·•',
+            randomThreshold: 0.95,
+            autoInitialize: true,
+          }
+        )
+
+        // Restore opacity immediately after scrambler initialization
+        // This prevents flicker while keeping elements ready for animation
+        setTimeout(() => {
+          restoreOpacity(document.getElementById('main-title'))
+          restoreOpacity(document.getElementById('subtitle'))
+          restoreOpacity(document.getElementById('description'))
+        }, 0)
+
+        // Start animations in sequence
+        setTimeout(() => titleScrambler.start(), 500)
+        setTimeout(() => subtitleScrambler.start(), 1500)
+        setTimeout(() => descScrambler.start(), 2500)
+      }
+
+      // Initialize page animations
+      initializePageAnimations()
+    </script>
+  </body>
+</html>
