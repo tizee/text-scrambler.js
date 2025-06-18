@@ -23,7 +23,7 @@
 
       .container {
         display: grid;
-        grid-template-areas: 
+        grid-template-areas:
           "header header"
           "demo samples"
           "info info";
@@ -177,7 +177,7 @@
 
       @media (max-width: 1024px) {
         .container {
-          grid-template-areas: 
+          grid-template-areas:
             "header"
             "demo"
             "samples"
@@ -249,12 +249,12 @@
           <h3>Usage</h3>
           <p>Click any text sample to trigger the scramble animation. Use the control panel to adjust parameters in real-time.</p>
         </div>
-        
+
         <div class="info-block">
           <h3>Animation Modes</h3>
           <p>Reveal mode shows text progressively. Dissolve mode makes text disappear with scrambled characters.</p>
         </div>
-        
+
         <div class="info-block">
           <h3>Preset Effects</h3>
           <p>Choose from Matrix, Typewriter, Glitch, and Hacking presets, each with optimized settings for different visual styles.</p>
@@ -292,14 +292,14 @@
         container: document.getElementById('gui-container'),
         width: 280,
       })
-      
+
       // Make GUI draggable
       gui.domElement.style.position = 'relative'
       gui.domElement.style.cursor = 'move'
-      
+
       let isDragging = false
       let dragOffset = { x: 0, y: 0 }
-      
+
       gui.domElement.addEventListener('mousedown', (e) => {
         isDragging = true
         const container = document.getElementById('gui-container')
@@ -308,31 +308,31 @@
         dragOffset.y = e.clientY - rect.top
         document.body.style.userSelect = 'none'
       })
-      
+
       document.addEventListener('mousemove', (e) => {
         if (isDragging) {
           const container = document.getElementById('gui-container')
           const containerRect = container.getBoundingClientRect()
-          
+
           // Calculate new position
           let newX = e.clientX - dragOffset.x
           let newY = e.clientY - dragOffset.y
-          
+
           // Get viewport dimensions
           const viewportWidth = window.innerWidth
           const viewportHeight = window.innerHeight
           const panelWidth = containerRect.width
           const panelHeight = containerRect.height
-          
+
           // Apply boundary constraints
           newX = Math.max(0, Math.min(newX, viewportWidth - panelWidth))
           newY = Math.max(0, Math.min(newY, viewportHeight - panelHeight))
-          
+
           container.style.left = newX + 'px'
           container.style.top = newY + 'px'
         }
       })
-      
+
       document.addEventListener('mouseup', () => {
         isDragging = false
         document.body.style.userSelect = ''

@@ -4,14 +4,12 @@ const tsparser = require('@typescript-eslint/parser')
 
 module.exports = [
   js.configs.recommended,
+  // JavaScript files
   {
-    files: ['**/*.{js,ts}'],
+    files: ['**/*.js'],
     languageOptions: {
-      parser: tsparser,
-      parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
-      },
+      ecmaVersion: 'latest',
+      sourceType: 'module',
       globals: {
         document: 'readonly',
         window: 'readonly',
@@ -29,17 +27,50 @@ module.exports = [
         globalThis: 'readonly',
       },
     },
-    plugins: {
-      '@typescript-eslint': tseslint,
-    },
     rules: {
-      ...tseslint.configs.recommended.rules,
       'no-unused-vars': 'warn',
       'no-console': 'warn',
       'prefer-const': 'error',
     },
   },
+  // TypeScript files (for config files)
   {
-    ignores: ['dist/', 'node_modules/', '*.config.js'],
+    files: ['**/*.ts'],
+    languageOptions: {
+      parser: tsparser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
+      globals: {
+        globalThis: 'readonly',
+      },
+    },
+    plugins: {
+      '@typescript-eslint': tseslint,
+    },
+    rules: {
+      ...tseslint.configs.recommended.rules,
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': 'warn',
+      'no-console': 'warn',
+      'prefer-const': 'error',
+    },
+  },
+  // CommonJS config files
+  {
+    files: ['eslint.config.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'commonjs',
+      globals: {
+        require: 'readonly',
+        module: 'readonly',
+        exports: 'readonly',
+      },
+    },
+  },
+  {
+    ignores: ['dist/', 'node_modules/', 'types/'],
   },
 ]

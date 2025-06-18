@@ -10,7 +10,7 @@ export default defineConfig({
   format: ['esm', 'iife'],
   target: 'esnext',
   outDir: 'dist',
-  dts: true,
+  dts: false,
   outExtension({ format }) {
     return {
       js: format === 'iife' ? '.js' : '.esm.js',
