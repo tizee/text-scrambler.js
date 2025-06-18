@@ -1,6 +1,6 @@
 {
   "name": "text-scrambler.js",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "a scramble text animation library",
   "main": "dist/text-scrambler.js",
   "module": "dist/text-scrambler.esm.js",

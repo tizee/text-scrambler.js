@@ -84,11 +84,18 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Read package.json for build artifact validation
+        id: package
+        run: |
+          echo "main=$(node -p "require('./package.json').main")" >> $GITHUB_OUTPUT
+          echo "module=$(node -p "require('./package.json').module")" >> $GITHUB_OUTPUT
+          echo "types=$(node -p "require('./package.json').types")" >> $GITHUB_OUTPUT
+
       - name: Check build artifacts
         run: |
-          test -f "dist/text-scrambler.js" && echo "✅ Production build exists" || (echo "❌ Production build missing" && exit 1)
-          test -f "dist/text-scrambler.esm.js" && echo "✅ ES Module build exists" || (echo "❌ ES Module build missing" && exit 1)
-          test -f "dist/text-scrambler.d.ts" && echo "✅ TypeScript definitions exist" || (echo "❌ TypeScript definitions missing" && exit 1)
+          test -f "${{ steps.package.outputs.main }}" && echo "✅ Main build exists: ${{ steps.package.outputs.main }}" || (echo "❌ Main build missing: ${{ steps.package.outputs.main }}" && exit 1)
+          test -f "${{ steps.package.outputs.module }}" && echo "✅ ES Module build exists: ${{ steps.package.outputs.module }}" || (echo "❌ ES Module build missing: ${{ steps.package.outputs.module }}" && exit 1)
+          test -f "${{ steps.package.outputs.types }}" && echo "✅ TypeScript definitions exist: ${{ steps.package.outputs.types }}" || (echo "❌ TypeScript definitions missing: ${{ steps.package.outputs.types }}" && exit 1)
 
   release:
     if: startsWith(github.ref, 'refs/tags/')
