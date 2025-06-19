@@ -1,7 +1,7 @@
 # text-scrambler.js
 
 [![CI](https://github.com/tizee/text-scrambler.js/actions/workflows/ci.yml/badge.svg)](https://github.com/tizee/text-scrambler.js/actions/workflows/ci.yml)
-![npm version](https://badge.fury.io/js/text-scrambler.js.svg)
+[![npm version](https://img.shields.io/npm/v/text-scrambler.js)](https://www.npmjs.com/package/text-scrambler.js)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Bundle Size](https://img.shields.io/bundlephobia/minzip/text-scrambler.js.svg)](https://bundlephobia.com/package/text-scrambler.js)
 ![last commit](https://img.shields.io/github/last-commit/tizee/text-scrambler.js/main)
